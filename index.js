@@ -21,34 +21,17 @@ const PAPERTRAIL_HOST = process.env.PAPERTRAIL_HOST,
 
 exports.handler = ( event, context, callback ) => {
 
-  if ( ! PAPERTRAIL_HOST || ! PAPERTRAIL_PORT || ! TRAVIS_API_TOKEN ) {
-    const message = 'Please ensure PAPERTRAIL_HOST, PAPERTRAIL_PORT and TRAVIS_API_TOKEN are defined.';
-    lambdaProxyResponse( message, null, callback );
-    return;
-  }
-
-  if ( ! event.body ) {
-    lambdaProxyResponse( 'Invalid payload: missing or empty body.', null, callback );
-    return;
-  }
-
-  let payload;
-
-  try {
-    payload = JSON.parse( event.body );
-  } catch ( error ) {
+  // Verify environment and inputs.
+  const error = verifyInputs( event );
+  if ( error ) {
     lambdaProxyResponse( error, null, callback );
     return;
   }
 
   // @see https://docs.travis-ci.com/user/notifications/#Webhooks-Delivery-Format
-  const TRAVIS_JOB = payload.id,
-        TRAVIS_REPO = payload.repository ? payload.repository.name : '';
-
-  if ( ! TRAVIS_JOB || ! TRAVIS_REPO ) {
-    lambdaProxyResponse( 'Invalid payload: missing job ID or repository name.', null, callback );
-    return;
-  }
+  const payload = JSON.parse( event.body ),
+        TRAVIS_JOB = payload.id,
+        TRAVIS_REPO = payload.repository.name;
 
   console.log( 'Spinning up...' );
 
@@ -95,9 +78,41 @@ exports.handler = ( event, context, callback ) => {
     }
 
     log.info( dataString );
-
     loggedLines += dataString.split( '\n' ).length;
 
   }); // Travis readable.
-
 }; // Exports.handler.
+
+/**
+ * Verifies the inputs required to run the main function - both from environment variables and
+ * the incoming payload.
+ *
+ * @param {object} event The incoming API Gateway Lambda proxy payload. Should contain at least
+ *                       a `body` property.
+ * @return {string|Error|null} An error message if an error occurred, or null if no error.
+ */
+function verifyInputs( event ) {
+
+  if ( ! PAPERTRAIL_HOST || ! PAPERTRAIL_PORT || ! TRAVIS_API_TOKEN ) {
+    return 'Missing PAPERTRAIL_HOST, PAPERTRAIL_PORT or TRAVIS_API_TOKEN.';
+  }
+
+  if ( ! event.body ) {
+    return 'Invalid payload: missing or empty body.';
+  }
+
+  let payload;
+
+  try {
+    payload = JSON.parse( event.body );
+  } catch ( error ) {
+    return error;
+  }
+
+  if ( ! payload.id || ! payload.repository || ! payload.repository.name ) {
+    return 'Invalid payload: missing job ID or repository name.';
+  }
+
+  return null;
+
+} // Function verifyInputs.
