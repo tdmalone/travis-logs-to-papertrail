@@ -9,6 +9,7 @@
 
 const logStream = require( 'travis-log-stream' ),
       winston = require( 'winston' ),
+      querystring = require( 'querystring' ),
       papertrailTransport = require( 'winston-papertrail' ).Papertrail,
       lambdaProxyResponse = require( '@tdmalone/lambda-proxy-response' );
 
@@ -21,18 +22,17 @@ const PAPERTRAIL_HOST = process.env.PAPERTRAIL_HOST,
 
 exports.handler = ( event, context, callback ) => {
 
-  // Include data for debugging.
-  console.log( event );
+  const body = querystring.parse( event.body );
 
   // Verify environment and inputs.
-  const error = verifyInputs( event );
+  const error = verifyInputs( body );
   if ( error ) {
     lambdaProxyResponse( error, null, callback );
     return;
   }
 
   // @see https://docs.travis-ci.com/user/notifications/#Webhooks-Delivery-Format
-  const payload = JSON.parse( event.body ),
+  const payload = JSON.parse( body.payload ),
         TRAVIS_JOB = payload.id,
         TRAVIS_REPO = payload.repository.name;
 
@@ -94,20 +94,20 @@ exports.handler = ( event, context, callback ) => {
  *                       a `body` property.
  * @return {string|Error|null} An error message if an error occurred, or null if no error.
  */
-function verifyInputs( event ) {
+function verifyInputs( body ) {
 
   if ( ! PAPERTRAIL_HOST || ! PAPERTRAIL_PORT || ! TRAVIS_API_TOKEN ) {
     return 'Missing PAPERTRAIL_HOST, PAPERTRAIL_PORT or TRAVIS_API_TOKEN.';
   }
 
-  if ( ! event.body ) {
-    return 'Invalid payload: missing or empty body.';
+  if ( ! body || ! body.payload ) {
+    return 'Invalid payload: missing or empty body or payload parameter.';
   }
 
   let payload;
 
   try {
-    payload = JSON.parse( event.body );
+    payload = JSON.parse( body.payload );
   } catch ( error ) {
     return error;
   }
