@@ -57,7 +57,7 @@ The following environment variables must be defined on your system:
 
 You can get your Papertrail details from [the bar at the top of this page](https://papertrailapp.com/systems/setup), and your Travis API token from the top left of [your profile](https://travis-ci.org/profile/) (if you're using Travis Pro, make sure you get your token from [your travis-ci.com profile](https://travis-ci.com/profile/)).
 
-The final `CI` variable above is optional, but recommended. If set (which it is [by default on Travis CI](https://docs.travis-ci.com/user/environment-variables/#Default-Environment-Variables), for instance), it will cause errors to be _thrown_ rather than returned as an [API Gateway style response](https://docs.aws.amazon.com/apigateway/latest/developerguide/handle-errors-in-lambda-integration.html). If not set, tests will still 'pass', as errors will be mapped to a HTTP status code rather than thrown.
+The final `CI` variable above is optional, but recommended. If set (which it is [by default on Travis CI](https://docs.travis-ci.com/user/environment-variables/#Default-Environment-Variables), for instance), it will 1) cause errors to be _thrown_ rather than returned as an [API Gateway style response](https://docs.aws.amazon.com/apigateway/latest/developerguide/handle-errors-in-lambda-integration.html), and 2) only log the final line of the test job rather than all 500-odd lines.
 
 ## TODO
 
