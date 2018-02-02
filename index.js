@@ -21,6 +21,9 @@ const PAPERTRAIL_HOST = process.env.PAPERTRAIL_HOST,
 
 exports.handler = ( event, context, callback ) => {
 
+  // Include data for debugging.
+  console.log( event );
+
   // Verify environment and inputs.
   const error = verifyInputs( event );
   if ( error ) {
