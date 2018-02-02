@@ -1,0 +1,43 @@
+{
+  "name": "travis-logs-to-papertrail",
+  "version": "0.0.0",
+  "description": "Lambda function to send Travis CI build logs to Papertrail.",
+  "homepage": "https://github.com/tdmalone/travis-logs-to-papertrail#readme",
+  "repository": "git+https://github.com/tdmalone/travis-logs-to-papertrail.git",
+  "main": "index.js",
+  "author": "Tim Malone <tdmalone@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "lint": "cross-env DEBUG=eslint:cli-engine eslint --color --ignore-pattern '/coverage/' --ignore-pattern '/docs/' --ignore-pattern '!.eslintrc.js' \"**/*.js\"",
+    "fix": "yarn lint --fix",
+    "test": "yarn unit-tests && yarn docker-tests",
+    "docker-tests": "docker run -e CI -e PAPERTRAIL_HOST -e PAPERTRAIL_PORT -e TRAVIS_API_TOKEN --rm -v $PWD:/var/task lambci/lambda:nodejs6.10 index.handler '{ \"body\": \"{ \\\"id\\\": 336441132, \\\"repository\\\": { \\\"name\\\": \\\"travis-logs-to-papertrail\\\" } }\" }'",
+    "unit-tests": "jest --verbose --coverage"
+  },
+  "keywords": [
+    "aws",
+    "travis-ci",
+    "lambda",
+    "logging",
+    "logs",
+    "papertrail"
+  ],
+  "jest": {
+    "testMatch": [
+      "**/tests/**/*.js"
+    ]
+  },
+  "dependencies": {
+    "@tdmalone/lambda-proxy-response": "^0.0.2",
+    "travis-log-stream": "^2.0.0",
+    "winston": "^2.4.0",
+    "winston-papertrail": "hyrwork/winston-papertrail"
+  },
+  "devDependencies": {
+    "cross-env": "^5.1.0",
+    "eslint": "^4.8.0",
+    "eslint-config-tdmalone": "^0.0.1",
+    "jest": "^21.2.1",
+    "jest-tobetype": "^1.1.0"
+  }
+}

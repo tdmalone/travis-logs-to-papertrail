@@ -1,0 +1,68 @@
+language: node_js
+services: docker
+node_js: 6.10
+
+env:
+  global:
+
+    - AWS_ACCESS_KEY_ID=AKIAI7QD4PIZEYCDPN6A
+    - AWS_DEFAULT_REGION=ap-southeast-2
+    - LAMBDA_NAME=travisLogsToPapertrail
+    - LAMBDA_ALIAS=prod
+    - PAPERTRAIL_HOST=logs5.papertrailapp.com
+
+    # PAPERTRAIL_PORT
+    - secure: m/yxnXcfoG30H30e1SodxNJ2KlwWwI9+oIle6o5iEgKtFHmH9mpRYyoaZkmsIH251/c++O5QadDIQi3gsGR4OnUfpJ3dm9ZxrwTo7b1Peow1wgeha+FNZTdjHqSllxoOYW31/TKC/y6BBKUSrKSnbbJWEecy0Me38qD/8deN3BPOwLx9O3wD0bAHQ0gltmHgjA8stkbMiLBywklvFpH84NDS3WSmSPXn89kVU9c8woxrLP1fJb2PCrqds1rLf9gmaVfO34u4KjR2EF2GL01eNNapfuo5xsKzC9UsGY86+eR0sZbKMuL75XFo2/5Bb5WfAtuV1cVUr+j6cxtqtuYei8K7ykQizYGWWFSImyya/fsyEvFwrBhDnS/0xIiYMI5Cdgx4aXQLb27N00NhPiArYxEcttVBQq/Yv8vvGNxjwCBQcUmh+rgsDmP5m3Kss2W9pkdSPlEJqvFEJ9/v9lP6xG4/wl6xtr9yvH6KBsKhqfPLWJjxlQanTXe6rrJjA3riSy7mghXJzIdXiydGI5kXFrscEjp9s5JHayhFmQoo6KQ2y74+MqhB6/qfs03HuhXWDGRKwuilmsXvEeWouK9a/9PG+YL3pGnu3Uu8wXtFeT5XACpk+rvhrf4h+8yhEPCb7BLLPRpe7cE4N5QfUQh33J7tFpplS01kewuQ8xyHzoc=
+
+    # AWS_SECRET_ACCESS_KEY
+    - secure: Z1zhlkNkKMCwHQlVHuhBWI9gxXUKARkvo4cNE6l3nSt/QCzU3b2yeyh7IG4Kxffm6fs/WHEW2S6ffN8nyPjib7AapDGv4/Lg/4zMaznZt9Ur72ssT6h8f6LShiFbE4GMEGibuuRCE0rc1QMLkzpnzBObGwWVBk+JEHgwINmjWEc7cQ73xQL0P569gUU71FTcvIfOXDWEPjHmadiJQ+WGRxH6eOW8UGMKgY7bjwPmueJxbrNtGGld2P3yZEpxPasfBweoLE/MWuY3busNXNYz7XSTfuYPY66A6KlA5WS2AxBkNmW7QI05ugWlc+jQO5rJa4j5VOGJlpLcCamw7TfUdoBSgJ48pxhnNu5KE7xFmlTeRheXFAliIwH5+R+cTqAf3R5oPADHPoDD3ey95suD6y3TB7Vg0HfkJkjtD0IiQ+uxLSErLlK79yCREgr7lCj4gB7Mq2r70XyIsCKmLbSpFXAZPeTRVcXCDZbBZ9NRj+dUW5pwiiqZKx5/06g+G1ME9g0wnygNwCzDkoPuBbF2n9vLBcfbCMe0yhIu+1CkjgOYX2MRIipcjJEG93/p93Ol4yfFH47X7y4vPbYmlE8HGGwz7MTKcnquJIe4fpAD9fKgzJvj2BFpHGBYJSZEoGXNKxXATtn2R6EWw8YbHzl45cdyhlfjiWah68WFCfvU2Fs=
+
+    # TRAVIS_API_TOKEN
+    - secure: Xt2Fg0kjLIFjYks7YIDB+5YtMoAGTcZlolMhzH60zyz+ca+1/kPwtclfSkKo5LIKqbvfOSCZq80L8Ds1FyPqzIYsR8Hjji7wQOLv3NBBtHn1dcHer9PmT0ZSWJE3JCcQcYlbkrjrmOf9smR82eQYRra7nu62N9dKmVsrSg/2PCnr+aN2OjtKJtVOIDj6oibuOeT3NjwK//M/CGviv3ILdKzF2BbDNfmcktlRSqNT/DV4sFUCwe3IRo3vmeCcaxHmtNthTOkqOp3ET5gCh6wm4+4E1fbUdgFJWFgQ3QGdUv5Z3N1JcU5BpN/oUPX2X+TnxArfvQd6APLnBKR84qH8O2v2xFOkWTYdwOJU4bL9LqqVk8gOlmbVhcLwnLvL8ZRl7pcku7/jxT8iAM5nW1mbJIhfgrghOlS+yE4+EOqbcm0I32D3432PU9OeZM2wJUP28ui8mCFZotJQEskrKU41UZAaAnK0UPB098dzTNxbyISOUlEJENeQ+zwoq9wU69DBwfjfcZ2FcChzMbeXdmyUTHY7j5msQFIu5ha1mRro63DbKPhn4f2y0QChI17qXg8x22Pro/TNiOxmW4gGSS2/nzBaXMHqg8FNcOB8cIM21EdzUXl2Lrx7RtDuw5Fnvia2vQTsOFmdy1UUxCwXi7TVzXSXjg/hUe3zOoqgR3994FY=
+
+cache:
+  yarn: true
+  directories:
+    - node_modules
+
+install: yarn
+
+script:
+  - yarn lint
+  - yarn test
+
+before_deploy: rm -rf node_modules && yarn --prod && rm -rf tests .*rc.js
+
+deploy:
+
+  - provider: lambda
+    publish: true
+    function_name: $LAMBDA_NAME
+    region: $AWS_DEFAULT_REGION
+    role: arn:aws:iam::873114526714:role/genericLambdaRole
+    description: Sends Travis CI build logs to Papertrail for easy aggregation, search and alerts.
+    runtime: nodejs6.10
+    timeout: 60
+    handler_name: handler
+    access_key_id: $AWS_ACCESS_KEY_ID
+    secret_access_key:
+      secure: fRjdT0JwZ0L5WpZ9A3B/XlqK62gq7WCjUc7nkhGRwlsB1SmtUzMU1Aw820ECxNUMoaL2i7pFUK+ORt541THm/VAhdZiZ+/KN5mjmbj9eajKwu54cBcfLoATCBWrergl7y0k1W3asbj6fEH460+mR97Qgj/1cpJcLxVsOcmDXZr17mSMVqIv3Ts5C3ibHXSUVsVHomwt9XzEZQRgwWYd+Z+npIPXYFEfo30ZeqbjttkeH+5ZZzfmqUxk2JumKLDAg4EDSzLidapLNyLGaXptMjbDGHmZRAdPq686PHW2RBnnpU0B1BS2wk5paz1S1tYfS8YfO6rgv1P/RaMbOC31LUBm5xuqgcMUnbKZfDgTHjY18j5EhdzKYYuQEI1TwurcdlRKjiWW8vYq80s0Hvb72Sr9ENmZcCqzWOrPJupmloEah6KvTDIyn3xbFpBwToyLPpx1icL0xNrqyU5wDAJhvqgs5x2tDSoz7rCAw1PVPI9eA9eO7VMfd/ufw/gHPk8nPVBTL0pVgYAf1/uN2HGhxGfZlMqDYP9uRy/OD7QH13W9HZadEQejl4Wu1+CM4oYJueyAYEHjELM8ffPUT8JmUiUrJ/9oKrBsBKb6MyK+uV8MwOF1k2zlZBrcNLPeXGBW2LzIa/fhW93hOHAEH1g+MRKER+2ja0keCtK0D3NCMrkU=
+    skip_cleanup: true
+    on:
+      branch: master
+
+after_deploy:
+
+  # Set a Lambda alias to the most recently deployed version.
+  - pip install awscli --upgrade --user
+  - export MOST_RECENT=$(aws lambda list-versions-by-function --function "${LAMBDA_NAME}" --max-items 10000 | node -e "let stdin=''; process.stdin.on('data',(chunk)=>{stdin+=chunk}).on('end',()=>{console.log(JSON.parse(stdin).Versions.pop().Version)})")
+  - aws lambda update-alias --function-name "${LAMBDA_NAME}" --name "${LAMBDA_ALIAS}" --function-version "${MOST_RECENT}"
+
+notifications:
+  email: false
+  webhooks:
+    urls: https://api.tm.id.au/dev/travis/jobStatus
+  slack:
+    on_start: always
+    rooms:
+      - secure: pvzr4eRL31b/VC4+h/kwBtKZmWpNPq9yyBJrz4EfsouNbm8SX832ttfwccfmyVQOM3f/YWOfxympy3OlXLprNsH7TQa/LgwXG9oHLwkbDRvM/IqVs2wlYNLelphv9Il6w39yPI6f3Kpt9XEsZ2JXODhhwcuN6kaZ6P1KxPTzdxJYm0trH8Dl9fo9tVfwHzsNKe2ysiDPzI063DtcCKedpYEVv50boXROHGb6g4m6/apcW5WMPqv9j7BiCWhjFloObnpdV3F62cZmr1hxMmG1DJ9wSb0XdAvreVkpyGuZZKTCxFKHzxbCoW8cOiasu0v9A0ciVUOEbZ+X1N/uxRipMDiSYJTOSrn0+L1CqyKnpJJZmRagLJ4Ohun9FsjhMjvus2IMw/E2eLbzvV9+YB44/SwsVz0BDG7Ia7c03N1fTr11lI8Ui1BuDuQtIGtJaX2MLwUfK4+M0/80UlVrTfBm7uwj33FWxocxOqv/PPf/nNRytCmvdyEskTeBQJo06ALMF9j9uR9nV/wfGQb2TJHQUpRtTKtZAmcOPW8e+tVksrpKhD5JYsB+ECRvBcP4bM6pBs3WlU8Hmu2w74gMPWxg3kwBqWrG9WZqLivDhJtlt03oyZz07h8tWOeDrYOFlqXIzv4CWx8zatBSFwnOs2vuqfJLap5CArQG03vS4d0a1uw=
