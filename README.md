@@ -2,11 +2,68 @@
 
 An [AWS Lambda](https://aws.amazon.com/lambda/) function that, in partnership with the [AWS API Gateway](https://aws.amazon.com/api-gateway/), sends your [Travis CI](https://travis-ci.org/) build logs to [Papertrail](https://papertrailapp.com/) for easy aggregation, search and alerts.
 
-...
+## Setup
+
+### Lambda
+
+Instructions to come.
+
+### API Gateway
+
+Instructions to come.
+
+### travis.yml
+
+Add the following to your `.travis.yml`:
+
+    notifications:
+      webhooks:
+        urls: https://YOUR_API_ID.execute-api.YOUR_REGION.amazonaws.com/API_STAGE/API_ENDPOINT
+
+You don't need to change any of the `on_success`/`on_failure` etc. flags from the default, unless you particularly want to only log errors dependent on certain outcomes.
+
+#### A note about `on_start`
+
+The `on_start` setting technically isn't supported by this script yet, as the intention is to retrieve and send your job's logs after it has _completed_. It shouldn't be too hard to expand to cover a live logging scenario beginning at the start, but this will probably mean your Lambda will need to run for the duration of your build. This can both increase your costs, and risk logs being cut off if your job continues longer than your Lambda timeout (the maximum AWS allows is 5 minutes).
+
+## Tests
+
+To run all tests at once:
+
+    yarn test
+
+### Unit Tests
+
+To run:
+
+    yarn unit-tests
+
+Unit tests are yet to be written, and will currently just pass.
+
+### Integration Tests
+
+To run:
+
+    yarn docker-tests
+
+Integration tests require [Docker](https://docs.docker.com/install/). They run in `lambci/lambda:nodejs6.10` ([GitHub](https://github.com/lambci/docker-lambda) | [Docker Hub](https://hub.docker.com/r/lambci/lambda/)).
+
+The following environment variables must be defined on your system:
+
+* `PAPERTRAIL_HOST`
+* `PAPERTRAIL_PORT`
+* `TRAVIS_API_TOKEN`
+* `CI` - optional
+
+You can get your Papertrail details from [the bar at the top of this page](https://papertrailapp.com/systems/setup), and your Travis API token from the top left of [your profile](https://travis-ci.org/profile/) (if you're using Travis Pro, make sure you get your token from [your travis-ci.com profile](https://travis-ci.com/profile/)).
+
+The final `CI` variable above is optional, but recommended. If set (which it is [by default on Travis CI](https://docs.travis-ci.com/user/environment-variables/#Default-Environment-Variables), for instance), it will cause errors to be _thrown_ rather than returned as an [API Gateway style response](https://docs.aws.amazon.com/apigateway/latest/developerguide/handle-errors-in-lambda-integration.html). If not set, tests will still 'pass', as errors will be mapped to a HTTP status code rather than thrown.
 
 ## TODO
 
-* Add some stuff to this list
+* Add more complete instructions to this file.
+* Add unit tests.
+* Add webhook verification to ensure it comes from Travis (see [here](https://github.com/Brodan/travis-webhook-verification-nodejs/blob/master/express.js) for an example).
 
 ## Acknowledgements
 

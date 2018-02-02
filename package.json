@@ -8,10 +8,11 @@
   "author": "Tim Malone <tdmalone@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "execute": "docker run -e CI -e PAPERTRAIL_HOST -e PAPERTRAIL_PORT --rm -v $PWD:/var/task lambci/lambda:nodejs6.10 index.handler {}",
     "lint": "cross-env DEBUG=eslint:cli-engine eslint --color --ignore-pattern '/coverage/' --ignore-pattern '/docs/' --ignore-pattern '!.eslintrc.js' \"**/*.js\"",
     "fix": "yarn lint --fix",
-    "test": "jest --verbose --coverage"
+    "test": "yarn unit-tests && yarn docker-tests",
+    "docker-tests": "docker run -e CI -e PAPERTRAIL_HOST -e PAPERTRAIL_PORT --rm -v $PWD:/var/task lambci/lambda:nodejs6.10 index.handler {}",
+    "unit-tests": "jest --verbose --coverage"
   },
   "keywords": [
     "aws",
