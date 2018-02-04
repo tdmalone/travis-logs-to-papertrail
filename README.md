@@ -61,7 +61,9 @@ The final `CI` variable above is optional, but recommended. If set (which it is 
 
 ## TODO
 
-* Add more complete instructions to this file.
+* Complete the instructions in this file.
+* Better error handling for when logs are not available and/or stream cannot be read.
+* Add proper support for travis-ci.com (passing access token and pro API option to [the API wrapper](https://www.npmjs.com/package/travis-ci))
 * Add unit tests.
 * Add webhook verification to ensure it comes from Travis (see [here](https://github.com/Brodan/travis-webhook-verification-nodejs/blob/master/express.js) for an example).
 

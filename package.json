@@ -11,7 +11,7 @@
     "lint": "cross-env DEBUG=eslint:cli-engine eslint --color --ignore-pattern '/coverage/' --ignore-pattern '/docs/' --ignore-pattern '!.eslintrc.js' \"**/*.js\"",
     "fix": "yarn lint --fix",
     "test": "yarn unit-tests && yarn docker-tests",
-    "docker-tests": "docker run -e CI -e PAPERTRAIL_HOST -e PAPERTRAIL_PORT -e TRAVIS_API_TOKEN --rm -v $PWD:/var/task lambci/lambda:nodejs6.10 index.handler '{ \"body\": \"payload=%7B%22id%22%3A336537189%2C%22repository%22%3A%7B%22name%22%3A%22travis-logs-to-papertrail-TESTER%22%7D%7D\" }'",
+    "docker-tests": "docker run -e CI -e PAPERTRAIL_HOST -e PAPERTRAIL_PORT -e TRAVIS_API_TOKEN --rm -v $PWD:/var/task lambci/lambda:nodejs6.10 index.handler '{ \"body\": \"payload=%7B%22id%22%3A336546217%2C%22repository%22%3A%7B%22name%22%3A%22travis-logs-to-papertrail-TESTER%22%7D%7D\" }'",
     "unit-tests": "jest --verbose --coverage"
   },
   "keywords": [
@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@tdmalone/lambda-proxy-response": "^0.0.2",
+    "travis-ci": "^2.1.1",
     "travis-log-stream": "^2.0.0",
     "winston": "^2.4.0",
     "winston-papertrail": "hyrwork/winston-papertrail"
