@@ -2,6 +2,20 @@
 
 An [AWS Lambda](https://aws.amazon.com/lambda/) function that, in partnership with the [AWS API Gateway](https://aws.amazon.com/api-gateway/), sends your [Travis CI](https://travis-ci.org/) build logs to [Papertrail](https://papertrailapp.com/) for easy aggregation, search and alerts.
 
+## Why??
+
+Well, partly for fun. But also because I like having [all](https://github.com/tdmalone/sftp-to-papertrail) [my](https://github.com/tdmalone/cloudwatch-to-papertrail) [logs](https://github.com/tdmalone/sns-to-papertrail) aggregated to the same place. It makes it simple and easy to search, view, and be alerted of issues in a familiar interface, and I like the simplicity of Papertrail.
+
+## But still, why build logs??
+
+Builds will fail on a non-zero exit code, and pass on a zero exit code.
+
+But how often have you had builds pass when they shouldn't? Maybe you forgot to catch a rejected Promise, or maybe you piped output to a command that clobbered your exit code. In those instances, you won't notice a build that should have failed unless you happen to check the logs.
+
+But if the logs are aggregated and you have alerts set up on key terms, you can be alerted anyway.
+
+Or perhaps you want to alerted by outputted 'warning' text in your builds, even though a warning usually isn't enough to fail a build.
+
 ## Setup
 
 ### Lambda
@@ -25,6 +39,16 @@ You don't need to change any of the `on_success`/`on_failure` etc. flags from th
 #### A note about `on_start`
 
 The `on_start` setting technically isn't supported by this script yet, as the intention is to retrieve and send your job's logs after it has _completed_. It shouldn't be too hard to expand to cover a live logging scenario beginning at the start, but this will probably mean your Lambda will need to run for the duration of your build. This can both increase your costs, and risk logs being cut off if your job continues longer than your Lambda timeout (the maximum AWS allows is 5 minutes).
+
+### Papertrail Alerts
+
+You'll probably want to set up [Papertrail alerts](https://help.papertrailapp.com/kb/how-it-works/alerts/) to make the most of aggregating your build logs there. Think about what you want to keep an eye out for, then do a search for it. Check your results are what you expect, then you can save the search and set up an alert for it.
+
+You can craft your searches to return only the results you want, and exclude those you don't want.
+
+This is my current setting:
+
+    ( error OR warning ) -'-Werror=format' -'to give useful error messages' -SNIMissingWarning -InsecurePlatformWarning
 
 ## Tests
 
