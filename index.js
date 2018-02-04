@@ -7,6 +7,8 @@
 
 'use strict';
 
+const COUNT_FROM_ZERO = 0;
+
 const winston = require( 'winston' ),
       travisCi = require( 'travis-ci' ),
       querystring = require( 'querystring' ),
@@ -79,8 +81,9 @@ exports.handler = ( event, context, callback ) => {
 
     // Finish up once we're done, sending back the results.
     Promise.all( jobs ).then( ( lineCounts ) => {
-      const loggedLines = lineCounts.reduce( ( a, b ) => a + b, 0 );
-      lambdaProxyResponse( null, 'Logged ' + jobs.length + ' jobs and ' + loggedLines + ' lines to Papertrail.', callback );
+      const lineCount = lineCounts.reduce( ( job1, job2 ) => job1 + job2, COUNT_FROM_ZERO );
+      const message = 'Logged ' + jobs.length + ' jobs and ' + lineCount + ' lines to Papertrail.';
+      lambdaProxyResponse( null, message, callback );
     }).catch( ( error ) => {
       lambdaProxyResponse( error, null, callback );
     });
@@ -91,12 +94,14 @@ exports.handler = ( event, context, callback ) => {
 /**
  * Sends the logs for a single job to Papertrail.
  *
- * @param int jobId The Travis CI job ID. Build IDs are not supported; multiple jobs make up a
- *                  build.
- * @return Promise A promise to retrieve and send the job's logs to Papertrail.
+ * TODO: Implement promise rejection when logs can't be found/accessed, or sent.
+ *
+ * @param {int} jobId The Travis CI job ID. Build IDs are not supported; multiple jobs make up a
+ *                    build.
+ * @return {Promise} A promise to retrieve and send the job's logs to Papertrail.
  */
 function logJob( jobId ) {
-  return new Promise( ( resolve, reject ) => {
+  return new Promise( ( resolve ) => {
 
     const jobLog = logStream({
       jobId:  jobId,
@@ -135,8 +140,7 @@ function logJob( jobId ) {
  * Verifies the inputs required to run the main function - both from environment variables and
  * the incoming payload.
  *
- * @param {object} event The incoming API Gateway Lambda proxy payload. Should contain at least
- *                       a `body` property.
+ * @param {object} body The incoming API Gateway Lambda proxy event body.
  * @return {string|Error|null} An error message if an error occurred, or null if no error.
  */
 function verifyInputs( body ) {
