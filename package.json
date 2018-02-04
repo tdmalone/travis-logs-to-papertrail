@@ -1,6 +1,6 @@
 {
   "name": "travis-logs-to-papertrail",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Lambda function to send Travis CI build logs to Papertrail.",
   "homepage": "https://github.com/tdmalone/travis-logs-to-papertrail#readme",
   "repository": "git+https://github.com/tdmalone/travis-logs-to-papertrail.git",
